@@ -1,0 +1,1 @@
+{"name": "card-generator-tools", "version": "1.0.0", "description": "卡密批量生成工具", "main": "generate.js", "scripts": {"generate": "node generate.js", "gen:month": "node generate.js -d 30", "gen:year": "node generate.js -d 365", "gen:life": "node generate.js -d 99999"}, "dependencies": {}}

@@ -1,0 +1,97 @@
+<view class="search-page">
+  <view class="custom-nav">
+    <view class="nav-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-bar">
+      <view class="search-header">
+        <view class="back-btn" bindtap="onBack">
+          <text class="back-icon">‹</text>
+        </view>
+        <view class="search-bar-mini">
+          <text class="search-icon">🔍</text>
+          <input
+            class="search-input-mini"
+            placeholder="搜索项目、工具、源码"
+            placeholder-class="search-placeholder-mini"
+            value="{{searchValue}}"
+            bindconfirm="onSearchConfirm"
+            bindinput="onSearchInput"
+          />
+          <text wx:if="{{searchValue}}" class="clear-icon" bindtap="onClearSearch">✕</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="search-content">
+    <view wx:if="{{searchHistory.length > 0 && !hasSearched}}" class="history-section">
+      <view class="history-header">
+        <text class="history-title">搜索历史</text>
+        <text class="clear-history" bindtap="onClearHistory">清空</text>
+      </view>
+      <view class="history-tags">
+        <text
+          class="history-tag"
+          wx:for="{{searchHistory}}"
+          wx:key="*this"
+          bindtap="onHistoryTap"
+          data-text="{{item}}"
+        >{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{hasSearched}}" class="result-section">
+      <view class="result-count">
+        <text wx:if="{{searchResults.length > 0}}">共找到 {{searchResults.length}} 个结果</text>
+        <text wx:else>未找到相关资源</text>
+      </view>
+      
+      <view class="resource-list" wx:if="{{searchResults.length > 0}}">
+        <view
+          class="resource-item card"
+          wx:for="{{searchResults}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="onResourceTap"
+        >
+          <view class="res-cover">
+            <text class="cover-emoji">{{item.cover}}</text>
+            <view wx:if="{{item.hot}}" class="hot-tag">热门</view>
+          </view>
+          <view class="res-info">
+            <view class="res-top">
+              <text class="res-title">{{item.title}}</text>
+              <view wx:if="{{item.vip}}" class="vip-badge">VIP</view>
+            </view>
+            <text class="res-desc">{{item.desc}}</text>
+            <view class="res-bottom">
+              <view class="res-meta">
+                <text class="res-tag">{{item.tag}}</text>
+                <text class="res-time">{{item.time}}</text>
+              </view>
+              <text class="res-price text-primary">¥{{item.price}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{searchResults.length === 0}}" class="empty-state">
+        <text class="empty-emoji">🔍</text>
+        <text class="empty-text">没有找到相关资源</text>
+        <text class="empty-desc">换个关键词试试吧</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!hasSearched && hotSearches.length > 0}}" class="hot-search-section">
+      <view class="hot-search-title">🔥 热门搜索</view>
+      <view class="hot-search-tags">
+        <text
+          class="hot-search-tag"
+          wx:for="{{hotSearches}}"
+          wx:key="*this"
+          bindtap="onHotSearchTap"
+          data-text="{{item}}"
+        >{{item}}</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,89 @@
+<view class="category-page">
+  <!-- 导航栏 -->
+  <view class="custom-nav">
+    <view class="nav-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-bar">
+      <text class="nav-title">资源分类</text>
+    </view>
+  </view>
+  <view class="page-content">
+    <view class="left-panel">
+      <view
+        class="group-item {{activeGroupId === item.id ? 'active' : ''}}"
+        wx:for="{{categoryGroups}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onGroupTap"
+      >
+        <text class="group-name">{{item.name}}</text>
+      </view>
+    </view>
+
+    <scroll-view class="right-panel" scroll-y bindscrolltolower="onReachBottom">
+      <view class="sub-category-section">
+        <view class="section-title-wrap">
+          <text class="section-dot"></text>
+          <text class="section-title">{{activeSubId === 'more' ? '全部分类' : activeGroupName}}</text>
+          <text class="section-dot"></text>
+        </view>
+        <view class="sub-category-grid">
+          <view
+            class="sub-category-item {{activeSubId === subCat.id ? 'active' : ''}}"
+            wx:for="{{activeGroupItems}}"
+            wx:for-item="subCat"
+            wx:key="id"
+            data-id="{{subCat.id}}"
+            data-name="{{subCat.name}}"
+            bindtap="onSubCategoryTap"
+          >
+            <view
+              class="sub-category-icon"
+              style="background-color: {{subCat.bg}}; {{subCat.border ? 'border: 4rpx solid ' + subCat.border : ''}}"
+            >
+              <text wx:if="{{!subCat.custom}}" class="sub-emoji">{{subCat.icon}}</text>
+              <text wx:else class="sub-text-icon">{{subCat.icon}}</text>
+            </view>
+            <text class="sub-category-name">{{subCat.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="resources-section">
+        <view class="section-header">
+          <text class="title-text">精选资源</text>
+          <text class="more-text">查看更多 ></text>
+        </view>
+        <view class="resource-grid">
+          <view
+            class="grid-item"
+            wx:for="{{resources}}"
+            wx:key="_id"
+            data-id="{{item._id}}"
+            bindtap="onResourceTap"
+          >
+            <view class="grid-cover">
+              <text class="cover-placeholder">📦</text>
+              <view wx:if="{{item.isVip}}" class="vip-badge">VIP</view>
+            </view>
+            <view class="grid-info">
+              <text class="grid-title">{{item.title}}</text>
+              <view class="grid-bottom">
+                <text class="grid-price text-primary">¥{{item.price}}</text>
+                <text class="text-muted grid-download">下载</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="load-more" wx:if="{{loading}}">
+        <text class="text-muted">加载中...</text>
+      </view>
+      <view class="load-more" wx:elif="{{!hasMore && resources.length > 0}}">
+        <text class="text-muted">—— 已经到底了 ——</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

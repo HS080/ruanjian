@@ -1,0 +1,430 @@
+<view class="container">
+  <view class="header">
+    <text class="title">👑 管理者后台</text>
+    <text class="subtitle">卡密管理 | 用户管理 | 资源管理 | 数据统计</text>
+  </view>
+
+  <!-- 无权限提示 -->
+  <view class="no-permission" wx:if="{{!isAdmin}}">
+    <text class="no-perm-icon">🔒</text>
+    <text class="no-perm-title">权限不足</text>
+    <text class="no-perm-desc">仅管理员可访问此页面</text>
+    <text class="no-perm-hint">如有疑问，请联系管理员</text>
+  </view>
+
+  <!-- 管理功能（仅管理员可见） -->
+  <view wx:if="{{isAdmin}}">
+
+  <!-- Tab切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 'generate' ? 'active' : ''}}" bindtap="switchTab" data-tab="generate">🚀 生成卡密</view>
+    <view class="tab-item {{currentTab === 'cards' ? 'active' : ''}}" bindtap="switchTab" data-tab="cards">🎫 卡密列表</view>
+    <view class="tab-item {{currentTab === 'users' ? 'active' : ''}}" bindtap="switchTab" data-tab="users">👥 用户管理</view>
+    <view class="tab-item {{currentTab === 'resources' ? 'active' : ''}}" bindtap="switchTab" data-tab="resources">📦 资源管理</view>
+  </view>
+
+  <!-- ========== 生成卡密面板 ========== -->
+  <view class="panel" wx:if="{{currentTab === 'generate'}}">
+    <view class="form-section">
+      <view class="form-item">
+        <text class="label">📊 生成数量</text>
+        <input class="input" type="number" value="{{count}}" bindinput="onCountInput" placeholder="1-100" />
+      </view>
+      <view class="form-item">
+        <text class="label">⏰ 有效期（天）</text>
+        <picker mode="selector" range="{{durationOptions}}" value="{{durationIndex}}" bindchange="onDurationChange">
+          <view class="picker">{{durationOptions[durationIndex]}}</view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="label">🔑 卡密长度</text>
+        <picker mode="selector" range="{{lengthOptions}}" value="{{lengthIndex}}" bindchange="onLengthChange">
+          <view class="picker">{{lengthOptions[lengthIndex]}}</view>
+        </picker>
+      </view>
+    </view>
+    <button class="btn-generate" bindtap="onGenerate" loading="{{generating}}" disabled="{{generating}}">
+      {{generating ? '正在生成并上传...' : '🚀 一键生成并上传到数据库'}}
+    </button>
+
+    <view class="result-section" wx:if="{{generated}}">
+      <view class="success-banner" wx:if="{{genSuccess}}">
+        <text class="success-icon">✅</text>
+        <view class="success-info">
+          <text class="success-title">上传成功！</text>
+          <text class="success-desc">已生成 {{newCards.length}} 张卡密并保存到数据库</text>
+        </view>
+      </view>
+      <view class="error-banner" wx:if="{{!genSuccess && errorMsg}}">
+        <text class="error-icon">❌</text>
+        <text class="error-msg">{{errorMsg}}</text>
+      </view>
+      
+      <view class="cards-mini-list" wx:if="{{genSuccess && newCards.length > 0}}">
+        <view class="section-title-small">新生成的卡密：</view>
+        <scroll-view scroll-x class="scroll-horizontal">
+          <view class="mini-card-inline" wx:for="{{newCards}}" wx:key="index">
+            <text class="mini-key">{{item}}</text>
+            <text class="mini-copy-btn" bindtap="onCopyCard" data-key="{{item}}">复制</text>
+          </view>
+        </scroll-view>
+      </view>
+      
+      <button class="btn-secondary" wx:if="{{genSuccess}}" bindtap="onCopyAllNew">📋 复制全部新卡密</button>
+      <button class="btn-reset" bindtap="onResetGenerate">🔄 继续生成更多</button>
+    </view>
+  </view>
+
+  <!-- ========== 卡密列表面板 ========== -->
+  <view class="panel" wx:if="{{currentTab === 'cards'}}">
+    <view class="filter-section">
+      <view class="search-box">
+        <text class="search-icon">🔍</text>
+        <input class="search-input" placeholder="搜索卡密..." value="{{keyword}}" bindinput="onSearchInput" bindconfirm="onSearch" />
+      </view>
+      <view class="filter-tabs">
+        <view class="filter-tab {{statusFilter === 'all' ? 'active' : ''}}" bindtap="onFilterStatus" data-status="all">全部</view>
+        <view class="filter-tab {{statusFilter === 'unused' ? 'active' : ''}}" bindtap="onFilterStatus" data-status="unused">未使用</view>
+        <view class="filter-tab {{statusFilter === 'used' ? 'active' : ''}}" bindtap="onFilterStatus" data-status="used">已使用</view>
+      </view>
+      <button class="btn-refresh" bindtap="loadCards" size="mini" loading="{{loading}}">🔄 刷新</button>
+    </view>
+
+    <view class="card-list-section" wx:if="{{cardList.length > 0}}">
+      <view class="list-header">
+        <text class="list-info">共 {{total}} 条记录 (第{{currentPage}}/{{totalPages}}页)</text>
+      </view>
+      
+      <view class="card-detail-row" wx:for="{{cardList}}" wx:key="_id">
+        <view class="card-main">
+          <view class="card-top">
+            <text class="card-key-text">{{item.key}}</text>
+            <view class="tag {{item.used ? 'tag-used' : 'tag-unused'}}">{{item.used ? '已使用' : '未使用'}}</view>
+          </view>
+          <view class="card-info-grid">
+            <view class="info-cell">
+              <text class="info-label">有效期</text>
+              <text class="info-value">{{item.duration}}天</text>
+            </view>
+            <view class="info-cell">
+              <text class="info-label">创建时间</text>
+              <text class="info-value">{{item.createTime || '-'}}</text>
+            </view>
+            <view class="info-cell" wx:if="{{item.used}}">
+              <text class="info-label">使用时间</text>
+              <text class="info-value">{{item.usedTime || '-'}}</text>
+            </view>
+            <view class="info-cell" wx:if="{{item.used}}">
+              <text class="info-label">用户ID</text>
+              <text class="info-value user-id">{{item.usedBy || '-'}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="card-actions">
+          <text class="action-copy" bindtap="onCopyCard" data-key="{{item.key}}">复制</text>
+          <text class="action-delete" bindtap="onDeleteCard" data-id="{{item._id}}" data-key="{{item.key}}">删除</text>
+        </view>
+      </view>
+
+      <view class="pagination" wx:if="{{totalPages > 1}}">
+        <text class="page-btn {{currentPage <= 1 ? 'disabled' : ''}}" bindtap="prevPage">上一页</text>
+        <text class="page-info">{{currentPage}} / {{totalPages}}</text>
+        <text class="page-btn {{currentPage >= totalPages ? 'disabled' : ''}}" bindtap="nextPage">下一页</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && cardList.length === 0}}">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">暂无卡密数据</text>
+      <text class="empty-hint">去「生成卡密」标签创建一些吧</text>
+    </view>
+
+    <view class="loading-state" wx:if="{{loading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+
+  <!-- ========== 用户管理面板 ========== -->
+  <view class="panel" wx:if="{{currentTab === 'users'}}">
+    <view class="filter-section">
+      <view class="search-box">
+        <text class="search-icon">🔍</text>
+        <input class="search-input" placeholder="搜索用户ID或昵称..." value="{{userKeyword}}" bindinput="onUserSearchInput" bindconfirm="onUserSearch" />
+      </view>
+      <view class="filter-tabs">
+        <view class="filter-tab {{userFilter === 'all' ? 'active' : ''}}" bindtap="onUserFilter" data-filter="all">全部用户</view>
+        <view class="filter-tab {{userFilter === 'vip' ? 'active' : ''}}" bindtap="onUserFilter" data-filter="vip">VIP用户</view>
+        <view class="filter-tab {{userFilter === 'normal' ? 'active' : ''}}" bindtap="onUserFilter" data-filter="normal">普通用户</view>
+      </view>
+      <button class="btn-refresh" bindtap="loadUsers" size="mini" loading="{{userLoading}}">🔄 刷新</button>
+    </view>
+
+    <view class="user-stats-bar" wx:if="{{userStats}}">
+      <view class="stat-box stat-total">
+        <text class="stat-num">{{userStats.total || 0}}</text>
+        <text class="stat-label">总用户</text>
+      </view>
+      <view class="stat-box stat-used">
+        <text class="stat-num">{{userStats.vipCount || 0}}</text>
+        <text class="stat-label">VIP用户</text>
+      </view>
+      <view class="stat-box stat-unused">
+        <text class="stat-num">{{userStats.normalCount || 0}}</text>
+        <text class="stat-label">普通用户</text>
+      </view>
+    </view>
+
+    <view class="user-list-section" wx:if="{{userList.length > 0}}">
+      <view class="list-header">
+        <text class="list-info">共 {{userTotal}} 位用户 (第{{userPage}}/{{userTotalPages}}页)</text>
+      </view>
+      
+      <view class="user-detail-row" wx:for="{{userList}}" wx:key="userId">
+        <view class="user-main">
+          <view class="user-top">
+            <text class="user-nickname">{{item.nickname || '未设置昵称'}}</text>
+            <view class="tag {{item.isVip ? 'tag-vip' : 'tag-normal'}}">{{item.isVip ? 'VIP会员' : '普通用户'}}</view>
+          </view>
+          <view class="user-info-grid">
+            <view class="info-cell">
+              <text class="info-label">用户ID</text>
+              <text class="info-value user-id">{{item.userId || '-'}}</text>
+            </view>
+            <view class="info-cell">
+              <text class="info-label">积分</text>
+              <text class="info-value">{{item.points || 0}}</text>
+            </view>
+            <view class="info-cell">
+              <text class="info-label">好友数</text>
+              <text class="info-value">{{item.friends || 0}}</text>
+            </view>
+            <view class="info-cell" wx:if="{{item.isVip}}">
+              <text class="info-label">到期日期</text>
+              <text class="info-value vip-expire">{{item.vipExpireDate || '-'}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="user-actions">
+          <text class="action-view" bindtap="onViewUserDetail" data-userid="{{item.userId}}">详情</text>
+          <text class="action-edit" wx:if="{{item.isVip}}" bindtap="onRevokeVip" data-userid="{{item.userId}}" data-nickname="{{item.nickname}}">取消VIP</text>
+        </view>
+      </view>
+
+      <view class="pagination" wx:if="{{userTotalPages > 1}}">
+        <text class="page-btn {{userPage <= 1 ? 'disabled' : ''}}" bindtap="prevUserPage">上一页</text>
+        <text class="page-info">{{userPage}} / {{userTotalPages}}</text>
+        <text class="page-btn {{userPage >= userTotalPages ? 'disabled' : ''}}" bindtap="nextUserPage">下一页</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!userLoading && userList.length === 0}}">
+      <text class="empty-icon">👥</text>
+      <text class="empty-text">暂无用户数据</text>
+      <text class="empty-hint">用户注册后会显示在这里</text>
+    </view>
+
+    <view class="loading-state" wx:if="{{userLoading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+
+  <!-- ========== 资源管理面板 ========== -->
+  <view class="panel" wx:if="{{currentTab === 'resources'}}">
+    
+    <!-- 资源统计 -->
+    <view class="resource-stats-bar" wx:if="{{resStats}}">
+      <view class="stat-box stat-total">
+        <text class="stat-num">{{resStats.total || 0}}</text>
+        <text class="stat-label">资源总数</text>
+      </view>
+      <view class="stat-box stat-used">
+        <text class="stat-num">{{resStats.today || 0}}</text>
+        <text class="stat-label">今日更新</text>
+      </view>
+      <view class="stat-box stat-unused">
+        <text class="stat-num">{{resStats.vip || 0}}</text>
+        <text class="stat-label">VIP资源</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮区 -->
+    <view class="res-action-bar">
+      <button class="btn-generate" bindtap="showAddResource" size="mini">➕ 添加资源</button>
+      <button class="btn-secondary" bindtap="showBatchImport" size="mini">📥 批量导入</button>
+      <button class="btn-refresh" bindtap="loadResources" size="mini" loading="{{resLoading}}">🔄 刷新</button>
+    </view>
+
+    <!-- 搜索筛选 -->
+    <view class="filter-section">
+      <view class="search-box">
+        <text class="search-icon">🔍</text>
+        <input class="search-input" placeholder="搜索资源标题..." value="{{resKeyword}}" bindinput="onResSearchInput" bindconfirm="onResSearch" />
+      </view>
+      <view class="filter-tabs">
+        <view class="filter-tab {{resFilter === 'all' ? 'active' : ''}}" bindtap="onResFilter" data-filter="all">全部</view>
+        <view class="filter-tab {{resFilter === 'vip' ? 'active' : ''}}" bindtap="onResFilter" data-filter="vip">VIP</view>
+        <view class="filter-tab {{resFilter === 'free' ? 'active' : ''}}" bindtap="onResFilter" data-filter="free">免费</view>
+      </view>
+    </view>
+
+    <!-- 资源列表 -->
+    <view class="resource-list-section" wx:if="{{resList.length > 0}}">
+      <view class="list-header">
+        <text class="list-info">共 {{resTotal}} 条资源 (第{{resPage}}/{{resTotalPages}}页)</text>
+      </view>
+      
+      <view class="card-detail-row res-row" wx:for="{{resList}}" wx:key="_id">
+        <view class="res-main">
+          <view class="res-top">
+            <text class="res-title-text">{{item.title}}</text>
+            <view class="tag tag-vip" wx:if="{{item.isVip}}">VIP</view>
+            <view class="tag tag-free" wx:elif="{{item.isFree}}">免费</view>
+            <view class="tag tag-normal" wx:else>普通</view>
+          </view>
+          <view class="res-info-grid">
+            <view class="info-cell">
+              <text class="info-label">价格</text>
+              <text class="info-value price-val">¥{{item.price}}</text>
+            </view>
+            <view class="info-cell">
+              <text class="info-label">分类</text>
+              <text class="info-value">{{item.tag || '-'}}</text>
+            </view>
+            <view class="info-cell">
+              <text class="info-label">浏览量</text>
+              <text class="info-value">{{item.views || 0}}</text>
+            </view>
+            <view class="info-cell" wx:if="{{item.downloadLink}}">
+              <text class="info-label">下载链接</text>
+              <text class="info-value link-val">{{item.downloadLink.substring(0, 20)}}...</text>
+            </view>
+          </view>
+        </view>
+        <view class="res-actions">
+          <text class="action-view" bindtap="onEditResource" data-id="{{item._id}}">编辑</text>
+          <text class="action-delete" bindtap="onDeleteResource" data-id="{{item._id}}" data-title="{{item.title}}">删除</text>
+        </view>
+      </view>
+
+      <view class="pagination" wx:if="{{resTotalPages > 1}}">
+        <text class="page-btn {{resPage <= 1 ? 'disabled' : ''}}" bindtap="prevResPage">上一页</text>
+        <text class="page-info">{{resPage}} / {{resTotalPages}}</text>
+        <text class="page-btn {{resPage >= resTotalPages ? 'disabled' : ''}}" bindtap="nextResPage">下一页</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!resLoading && resList.length === 0}}">
+      <text class="empty-icon">📦</text>
+      <text class="empty-text">暂无资源数据</text>
+      <text class="empty-hint">点击「添加资源」或「批量导入」开始上传</text>
+    </view>
+
+    <view class="loading-state" wx:if="{{resLoading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+
+  <!-- ========== 添加/编辑资源弹窗 ========== -->
+  <view class="modal-mask" wx:if="{{showResourceModal}}" bindtap="closeResourceModal">
+    <view class="modal-content resource-modal" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">{{editingResourceId ? '编辑资源' : '添加新资源'}}</text>
+        <text class="modal-close" bindtap="closeResourceModal">✕</text>
+      </view>
+      
+      <scroll-view scroll-y class="modal-body">
+        <view class="form-item">
+          <text class="label required">资源标题</text>
+          <input class="input" value="{{formData.title}}" bindinput="onFormInput" data-field="title" placeholder="输入资源标题" />
+        </view>
+        
+        <view class="form-item">
+          <text class="label">简短描述</text>
+          <input class="input" value="{{formData.desc}}" bindinput="onFormInput" data-field="desc" placeholder="一句话描述" />
+        </view>
+        
+        <view class="form-item">
+          <text class="label">详细内容</text>
+          <textarea class="textarea" value="{{formData.detail}}" bindinput="onFormInput" data-field="detail" placeholder="详细介绍（支持换行）" auto-height />
+        </view>
+        
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="label">价格(元)</text>
+            <input class="input" type="digit" value="{{formData.price}}" bindinput="onFormInput" data-field="price" placeholder="0=免费" />
+          </view>
+          <view class="form-item half">
+            <text class="label">原价(元)</text>
+            <input class="input" type="digit" value="{{formData.originalPrice}}" bindinput="onFormInput" data-field="originalPrice" placeholder="原价" />
+          </view>
+        </view>
+        
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="label">分类标签</text>
+            <input class="input" value="{{formData.tag}}" bindinput="onFormInput" data-field="tag" placeholder="如：实战项目" />
+          </view>
+          <view class="form-item half">
+            <text class="label">封面图标</text>
+            <input class="input" value="{{formData.cover}}" bindinput="onFormInput" data-field="cover" placeholder="emoji如：📁" />
+          </view>
+        </view>
+        
+        <view class="form-item">
+          <text class="label required">下载链接</text>
+          <input class="input" value="{{formData.downloadLink}}" bindinput="onFormInput" data-field="downloadLink" placeholder="https://..." />
+        </view>
+        
+        <view class="form-item">
+          <text class="label">特点(每行一个)</text>
+          <textarea class="textarea" value="{{formData.featuresStr}}" bindinput="onFormInput" data-field="featuresStr" placeholder="特点1&#10;特点2&#10;特点3" auto-height />
+        </view>
+        
+        <view class="switch-row">
+          <text class="label">设为VIP资源</text>
+          <switch checked="{{formData.isVip}}" bindchange="onSwitchChange" data-field="isVip" color="#f59e0b" />
+        </view>
+        
+        <view class="switch-row">
+          <text class="label">热门推荐</text>
+          <switch checked="{{formData.hot}}" bindchange="onSwitchChange" data-field="hot" color="#ef4444" />
+        </view>
+      </scroll-view>
+      
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="closeResourceModal">取消</button>
+        <button class="btn-confirm" bindtap="saveResource" loading="{{saving}}">{{editingResourceId ? '保存修改' : '确认添加'}}</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 批量导入弹窗 ========== -->
+  <view class="modal-mask" wx:if="{{showBatchModal}}" bindtap="closeBatchModal">
+    <view class="modal-content batch-modal" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">批量导入资源</text>
+        <text class="modal-close" bindtap="closeBatchModal">✕</text>
+      </view>
+      
+      <view class="modal-body">
+        <view class="batch-tips">
+          <text class="tip-title">📋 JSON格式说明：</text>
+          <text class="tip-text">粘贴JSON数组，每条资源包含 title, desc, downloadLink 等字段</text>
+        </view>
+        
+        <textarea class="json-textarea" value="{{batchJson}}" bindinput="onBatchJsonInput" placeholder='[{"title":"资源名","desc":"描述","downloadLink":"https://...","price":99,"isVip":true}]' auto-height />
+        
+        <view class="batch-preview" wx:if="{{batchPreviewCount > 0}}">
+          <text class="preview-text">已解析 {{batchPreviewCount}} 条资源</text>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="closeBatchModal">取消</button>
+        <button class="btn-confirm" bindtap="doBatchImport" loading="{{batchImporting}}">确认导入</button>
+      </view>
+    </view>
+  </view>
+
+  </view>
+</view>

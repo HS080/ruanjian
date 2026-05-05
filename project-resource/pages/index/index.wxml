@@ -1,0 +1,133 @@
+<view class="index-page">
+  <view class="custom-nav">
+    <view class="nav-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-bar">
+      <text class="nav-title">项目资源站</text>
+    </view>
+  </view>
+
+  <view class="welcome-mask" wx:if="{{showWelcomeModal}}" bindtap="closeWelcomeModal">
+    <view class="welcome-modal" catchtap="">
+      <view class="welcome-title">资源站介绍</view>
+      <view class="welcome-content">
+        40,000+ 精选课程，别人花几千块买的课，你在这里就能学到，别再被割韭菜了。这里汇集了全网最热门的网创项目、引流秘籍、变现玩法，每一个都经过筛选。别人还在交智商税的时候，你已经跑通项目开始赚钱了。
+少走三年弯路，从这里开始。
+
+
+      </view>
+      <view class="welcome-btn" bindtap="closeWelcomeModal">确定</view>
+    </view>
+  </view>
+
+  <view class="search-bar-wrap">
+    <view class="search-bar">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索你想要的"
+        placeholder-class="search-placeholder"
+        value="{{searchValue}}"
+        bindconfirm="onSearchConfirm"
+      />
+    </view>
+  </view>
+
+  <view class="poster-section">
+    <image
+      class="poster-image"
+      src="/images/new_poster_v4.png"
+      mode="widthFix"
+    ></image>
+  </view>
+
+  <view class="notice-bar">
+    <view class="notice-icon">📢</view>
+    <view class="notice-content">
+      <text class="notice-text" style="transform: translateX({{noticeOffset}}px)">{{noticeText}}</text>
+    </view>
+  </view>
+
+  <view class="quick-grid-section">
+    <view class="quick-grid">
+      <view
+        class="quick-item"
+        wx:for="{{quickList}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onQuickTap"
+      >
+        <view class="quick-icon" style="background-color: {{item.bg}}">
+          <text class="quick-emoji">{{item.icon}}</text>
+        </view>
+        <text class="quick-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="stats-bar card">
+    <view class="stat-item">
+      <text class="stat-value">{{stats.total}}</text>
+      <text class="stat-label">资源总数</text>
+    </view>
+    <view class="stat-line"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{stats.today}}</text>
+      <text class="stat-label">今日更新</text>
+    </view>
+    <view class="stat-line"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{stats.users}}</text>
+      <text class="stat-label">用户已领</text>
+    </view>
+  </view>
+
+  <view class="tabs-section">
+    <view class="tabs">
+      <view
+        class="tab-item {{activeTab === item.id ? 'active' : ''}}"
+        wx:for="{{tabList}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onTabTap"
+      >
+        <text>{{item.name}}</text>
+      </view>    </view>
+  </view>
+
+  <view class="resource-section">
+    <view class="resource-list">
+      <view
+        class="resource-item card"
+        wx:for="{{resourceList}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="onResourceTap"
+      >
+        <view class="res-cover">
+          <text class="cover-emoji">{{item.cover}}</text>
+          <view wx:if="{{item.hot}}" class="hot-tag">热门</view>
+        </view>
+        <view class="res-info">
+          <view class="res-top">
+            <text class="res-title">{{item.title}}</text>
+            <view wx:if="{{item.vip}}" class="vip-badge">VIP</view>
+          </view>
+          <text class="res-desc">{{item.desc}}</text>
+          <view class="res-bottom">
+            <view class="res-meta">
+              <text class="res-tag">{{item.tag}}</text>
+              <text class="res-time">{{item.time}}</text>
+            </view>
+            <text class="res-price text-primary">¥{{item.price}}</text>
+          </view>
+        </view>
+      </view>    </view>
+    <view class="load-more" wx:if="{{loading}}">
+      <text class="text-muted">正在加载...</text>
+    </view>
+  </view>
+
+  <view class="footer-space"></view>
+</view>
+
+

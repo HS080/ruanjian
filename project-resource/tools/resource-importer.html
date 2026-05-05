@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>资源批量导入生成器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 28px;
+      margin-bottom: 24px;
+      text-shadow: 0 2px 4px rgba(0,0,0,.1);
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    }
+    .panel h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    label.required::after { content: ' *'; color: #ef4444; }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all .2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .checkbox-row input { width: auto; }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+    .btn-add { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+    .btn-generate { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+    .btn-clear { background: #f3f4f6; color: #6b7280; }
+    .btn-copy { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+
+    .output-area {
+      background: #1f2937;
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .output-area pre {
+      color: #10b981;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f0fdf4;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #bbf7d0;
+    }
+    .stats-bar span { font-weight: 600; color: #166534; }
+    .tips {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #92400e;
+    }
+    .tips strong { color: #78350f; }
+    .template-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #1e40af;
+      cursor: pointer;
+      word-break: break-all;
+    }
+    .template-box:hover { background: #dbeafe; }
+    
+    .resource-list {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .resource-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .resource-item:last-child { margin-bottom: 0; }
+    .resource-item .title { font-weight: 600; color: #1f2937; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .resource-item .price { color: #ef4444; font-weight: 600; margin-left: 12px; }
+    .remove-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    .remove-btn:hover { background: #fecaca; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📦 资源批量导入生成器</h1>
+
+    <div class="main-grid">
+      <!-- 左侧：表单 -->
+      <div class="panel">
+        <h2>➕ 添加资源</h2>
+        
+        <div class="form-group">
+          <label class="required">资源标题</label>
+          <input type="text" id="title" placeholder="如：AI一键生成短剧课程">
+        </div>
+        
+        <div class="form-group">
+          <label>简短描述</label>
+          <textarea id="desc" placeholder="一句话描述，显示在列表中"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>详细内容</label>
+          <textarea id="detail" placeholder="详细介绍内容（支持换行）"></textarea>
+        </div>
+        
+        <div class="row">
+          <div class="form-group">
+            <label>价格（元）</label>
+            <input type="number" id="price" placeholder="0 = 免费" value="99">
+          </div>
+          <div class="form-group">
+            <label>原价（元）</label>
+            <input type="number" id="originalPrice" placeholder="原价" value="199">
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="form-group">
+            <label>分类标签</label>
+            <input type="text" id="tag" placeholder="如：实战项目、学习教程" value="实战项目">
+          </div>
+          <div class="form-group">
+            <label>封面图标</label>
+            <input type="text" id="cover" placeholder="emoji表情" value="📁">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="required">下载链接</label>
+          <input type="text" id="downloadLink" placeholder="https://pan.baidu.com/s/xxx 或任意链接">
+        </div>
+        
+        <div class="form-group">
+          <label>特点（每行一个）</label>
+          <textarea id="features" placeholder="特点1&#10;特点2&#10;特点3"></textarea>
+        </div>
+        
+        <div class="checkbox-row">
+          <input type="checkbox" id="isVip" checked>
+          <label for="isVip" style="margin:0;font-weight:normal;color:#555;">设为VIP资源</label>
+          
+          <input type="checkbox" id="hot">
+          <label for="hot" style="margin:0;font-weight:normal;color:#555;">热门推荐</label>
+        </div>
+        
+        <div class="btn-row">
+          <button class="btn-add" onclick="addResource()">添加到列表</button>
+          <button class="btn-clear" onclick="clearForm()">清空表单</button>
+        </div>
+        
+        <!-- 已添加的资源列表 -->
+        <div class="resource-list" id="resourceList" style="display:none;">
+        </div>
+        
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn-generate" onclick="generateJSON()">生成JSON</button>
+          <button class="btn-copy" onclick="copyJSON()">复制JSON</button>
+        </div>
+        
+        <div class="tips">
+          <strong>💡 使用说明：</strong><br>
+          1. 填写资源信息后点击「添加到列表」<br>
+          2. 可重复添加多个资源<br>
+          3. 点击「生成JSON」生成导入格式<br>
+          4. 复制JSON → 管理后台「批量导入」粘贴 → 导入<br><br>
+          <strong>⚡ 快速操作：</strong>可使用模板快速填充
+        </div>
+        
+        <div class="template-box" onclick="fillTemplate()">
+          📋 点击使用模板：AI短剧课程示例
+        </div>
+      </div>
+
+      <!-- 右侧：输出 -->
+      <div class="panel">
+        <h2>📋 JSON 输出</h2>
+        
+        <div class="stats-bar">
+          <span>已添加：<strong id="count">0</strong> 条资源</span>
+          <span>VIP：<strong id="vipCount">0</strong> | 免费：<strong id="freeCount">0</strong></span>
+        </div>
+        
+        <div class="output-area">
+          <pre id="jsonOutput">// 添加资源后会在这里生成JSON格式
+// 可直接复制到管理后台「批量导入」中使用
+
+[
+  {
+    "title": "资源标题",
+    "desc": "简短描述",
+    "downloadLink": "https://...",
+    "price": 99,
+    "isVip": true
+  }
+]</pre>
+        </div>
+        
+        <div class="tips">
+          <strong>📌 字段说明：</strong><br>
+          • <code>title</code> - 必填，资源标题<br>
+          • <code>desc</code> - 列表页显示的简短描述<br>
+          • <code>downloadLink</code> - VIP用户看到的下载链接（每个资源不同！）<br>
+          • <code>price</code> - 价格，0或空表示免费<br>
+          • <code>isVip</code> - 是否需要VIP才能下载<br>
+          • <code>detail</code> - 详情页详细内容<br>
+          • <code>features</code> - 特点数组<br>
+          • <code>tag</code> - 分类标签<br>
+          • <code>hot</code> - 是否热门推荐<br>
+          • <code>cover</code> - 封面emoji图标
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let resources = [];
+
+    function addResource() {
+      const title = document.getElementById('title').value.trim();
+      if (!title) {
+        alert('请输入资源标题！');
+        return;
+      }
+
+      const featuresStr = document.getElementById('features').value.trim();
+      const features = featuresStr ? featuresStr.split('\n').filter(s => s.trim()) : [];
+
+      const resource = {
+        title: title,
+        desc: document.getElementById('desc').value.trim(),
+        detail: document.getElementById('detail').value.trim(),
+        price: parseFloat(document.getElementById('price').value) || 0,
+        originalPrice: parseFloat(document.getElementById('originalPrice').value) || 0,
+        tag: document.getElementById('tag').value.trim(),
+        cover: document.getElementById('cover').value || '📁',
+        downloadLink: document.getElementById('downloadLink').value.trim(),
+        features: features,
+        isVip: document.getElementById('isVip').checked,
+        hot: document.getElementById('hot').checked
+      };
+
+      resources.push(resource);
+      updateList();
+      generateJSON();
+      clearForm();
+      
+      document.getElementById('title').focus();
+    }
+
+    function removeResource(index) {
+      resources.splice(index, 1);
+      updateList();
+      generateJSON();
+    }
+
+    function updateList() {
+      const listEl = document.getElementById('resourceList');
+      if (resources.length === 0) {
+        listEl.style.display = 'none';
+        return;
+      }
+      
+      listEl.style.display = 'block';
+      listEl.innerHTML = resources.map((r, i) => `
+        <div class="resource-item">
+          <span class="title">${i + 1}. ${r.title}</span>
+          <span class="price">${r.price > 0 ? '¥' + r.price : '免费'}</span>
+          <button class="remove-btn" onclick="removeResource(${i})">删除</button>
+        </div>
+      `).join('');
+
+      document.getElementById('count').textContent = resources.length;
+      document.getElementById('vipCount').textContent = resources.filter(r => r.isVip).length;
+      document.getElementById('freeCount').textContent = resources.filter(r => !r.isVip || r.price === 0).length;
+    }
+
+    function generateJSON() {
+      const output = document.getElementById('jsonOutput');
+      if (resources.length === 0) {
+        output.textContent = '// 暂无资源，请先添加';
+        return;
+      }
+      output.textContent = JSON.stringify(resources, null, 2);
+    }
+
+    function copyJSON() {
+      if (resources.length === 0) {
+        alert('没有可复制的内容！');
+        return;
+      }
+      const json = JSON.stringify(resources, null, 2);
+      navigator.clipboard.writeText(json).then(() => {
+        alert('已复制到剪贴板！\n\n请到管理后台「资源管理」→「批量导入」中粘贴');
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = json;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('已复制！请到管理后台粘贴');
+      });
+    }
+
+    function clearForm() {
+      document.getElementById('title').value = '';
+      document.getElementById('desc').value = '';
+      document.getElementById('detail').value = '';
+      document.getElementById('downloadLink').value = '';
+      document.getElementById('features').value = '';
+      document.getElementById('tag').value = '实战项目';
+      document.getElementById('cover').value = '📁';
+      document.getElementById('price').value = '99';
+      document.getElementById('originalPrice').value = '199';
+      document.getElementById('isVip').checked = true;
+      document.getElementById('hot').checked = false;
+    }
+
+    function fillTemplate() {
+      document.getElementById('title').value = 'AI一键生成短剧脚本课程';
+      document.getElementById('desc').value = 'AI智能生成短剧脚本，一键生成，含配套工具';
+      document.getElementById('detail').value = '本课程将带你深入了解AI短剧生成的核心技术，从脚本创作到视频制作全流程讲解。\n\n课程内容涵盖：\n1. AI短剧市场分析与前景\n2. 短剧脚本撰写技巧与模板\n3. 主流AI工具使用教程\n4. 视频后期处理技巧\n5. 短剧变现模式解析\n6. 实操案例演示';
+      document.getElementById('price').value = '129';
+      document.getElementById('originalPrice').value = '299';
+      document.getElementById('tag').value = '实战项目';
+      document.getElementById('cover').value = '🎬';
+      document.getElementById('downloadLink').value = 'https://pan.baidu.com/s/xxxxx?pwd=abc123';
+      document.getElementById('features').value = '系统性教学，从入门到精通\n真实案例拆解，可复制执行\n配套工具资源，即学即用\n持续更新迭代，紧跟潮流';
+      document.getElementById('isVip').checked = true;
+      document.getElementById('hot').checked = true;
+    }
+  </script>
+</body>
+</html>

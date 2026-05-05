@@ -1,0 +1,115 @@
+<view class="category-detail-page">
+  <view class="custom-nav">
+    <view class="nav-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-bar">
+      <view class="nav-back" bindtap="goBack">
+        <text class="back-icon">＜</text>
+      </view>
+      <text class="nav-title">{{pageTitle}}</text>
+    </view>
+  </view>
+
+  <view class="search-bar-wrap">
+    <view class="search-bar">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="在当前分类【{{pageTitle}}】搜索"
+        placeholder-class="search-placeholder"
+        value="{{searchValue}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <text wx:if="{{searchValue}}" class="search-clear" bindtap="clearSearch">✕</text>
+    </view>
+  </view>
+
+  <view class="filter-bar">
+    <view class="filter-item {{showCategoryFilter ? 'active' : ''}}" bindtap="toggleCategoryFilter">
+      <text class="filter-text">{{selectedCategoryName}}</text>
+      <text class="filter-arrow {{showCategoryFilter ? 'up' : ''}}">▼</text>
+    </view>
+    <view class="filter-divider"></view>
+    <view class="filter-item {{showSubFilter ? 'active' : ''}}" bindtap="toggleSubFilter">
+      <text class="filter-text">{{selectedSubName}}</text>
+      <text class="filter-arrow {{showSubFilter ? 'up' : ''}}">▼</text>
+    </view>
+  </view>
+
+  <view wx:if="{{showCategoryFilter}}" class="dropdown-mask" bindtap="closeFilters"></view>
+  
+  <view wx:if="{{showCategoryFilter}}" class="dropdown-content category-dropdown">
+    <scroll-view scroll-y class="dropdown-scroll">
+      <view
+        class="dropdown-item {{item.id === selectedCategoryId ? 'selected' : ''}}"
+        wx:for="{{categoryList}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        bindtap="selectCategory"
+      >
+        <text class="item-text">{{item.name}}</text>
+        <text wx:if="{{item.id === selectedCategoryId}}" class="check-icon">✓</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{showSubFilter}}" class="dropdown-mask" bindtap="closeFilters"></view>
+  
+  <view wx:if="{{showSubFilter}}" class="dropdown-content sub-dropdown">
+    <scroll-view scroll-y class="dropdown-scroll">
+      <view
+        class="dropdown-item {{item.id === selectedSubId ? 'selected' : ''}}"
+        wx:for="{{subCategoryList}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        bindtap="selectSub"
+      >
+        <text class="item-text">{{item.name}}</text>
+        <text wx:if="{{item.id === selectedSubId}}" class="check-icon">✓</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <scroll-view
+    class="resource-list-wrap"
+    scroll-y
+    bindscrolltolower="onReachBottom"
+    style="{{(showCategoryFilter || showSubFilter) ? 'filter: blur(4rpx); pointer-events: none;' : ''}}"
+  >
+    <view class="resource-grid">
+      <view
+        class="resource-card"
+        wx:for="{{resourceList}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="onResourceTap"
+      >
+        <view class="card-cover" style="background-color: {{item.coverBg || '#f8f8f8'}};">
+          <text class="cover-text">{{item.coverText || '📦'}}</text>
+          <view wx:if="{{item.isVip}}" class="vip-tag">会员免费</view>
+          <view wx:if="{{item.hot}}" class="hot-tag">{{item.hotText}}</view>
+        </view>
+        <view class="card-info">
+          <text class="card-title">{{item.title}}</text>
+          <view class="card-meta">
+            <text class="meta-views">{{item.views}}人浏览</text>
+            <text class="meta-date">{{item.date}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="load-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+    <view class="load-more" wx:elif="{{!hasMore && resourceList.length > 0}}">
+      <text>—— 已经到底了 ——</text>
+    </view>
+    <view class="empty-state" wx:if="{{!loading && resourceList.length === 0}}">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">暂无相关资源</text>
+    </view>
+  </scroll-view>
+</view>

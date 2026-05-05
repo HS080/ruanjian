@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>卡密生成器</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 50px auto; padding: 20px; background: #f5f5f5; }
+    .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #333; text-align: center; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+    input, select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    button { width: 100%; padding: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { opacity: 0.9; }
+    #result { margin-top: 25px; }
+    .card-item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; font-family: monospace; font-size: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #f59e0b; }
+    .copy-btn { padding: 6px 16px; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .copy-btn:hover { background: #4f46e5; }
+    .stats { background: #e0f2fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+    textarea { width: 100%; height: 200px; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px; box-sizing: border-box; background: #fefefe; }
+    .single-json { background: #f0fdf4; border: 2px solid #22c55e; }
+    .export-btn { background: linear-gradient(135deg, #10b981, #059669); }
+    .export-btn:hover { opacity: 0.9; }
+    .copy-all-btn { background: linear-gradient(135deg, #8b5cf6, #7c3aed); margin-top: 10px; }
+    .copy-all-btn:hover { opacity: 0.9; }
+    .tip { background: #fef3c7; padding: 15px; border-radius: 8px; margin-top: 15px; font-size: 14px; color: #92400e; line-height: 1.6; }
+    .section-title { font-size: 16px; font-weight: bold; color: #333; margin: 15px 0 10px 0; border-left: 4px solid #f59e0b; padding-left: 10px; }
+    .current-card { background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0; }
+    .current-card-value { font-size: 28px; font-weight: bold; font-family: monospace; letter-spacing: 3px; color: #92400e; }
+    .quick-copy-btn { padding: 12px 30px; font-size: 16px; margin-top: 10px; display: inline-block; width: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎫 卡密批量生成器</h1>
+
+    <div class="form-group">
+      <label>📊 生成数量</label>
+      <input type="number" id="count" value="10" min="1" max="100" placeholder="输入数量 (1-100)">
+    </div>
+
+    <div class="form-group">
+      <label>⏰ 有效期（天）</label>
+      <select id="duration">
+        <option value="30">30天 - 月度会员</option>
+        <option value="90">90天 - 季度会员</option>
+        <option value="180">180天 - 半年会员</option>
+        <option value="365" selected>365天 - 年度会员</option>
+        <option value="99999">永久 - 终身会员</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>🔑 卡密长度</label>
+      <select id="length">
+        <option value="8">8位字符</option>
+        <option value="10" selected>10位字符（推荐）</option>
+        <option value="12">12位字符</option>
+        <option value="16">16位字符</option>
+      </select>
+    </div>
+
+    <button onclick="generateCards()">🚀 生成卡密</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    let currentCards = []
+    let currentIndex = 0
+
+    function generateCardKey(length) {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+      let result = ''
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length))
+      }
+      return result
+    }
+
+    function generateSingleJSON(card, duration) {
+      const today = new Date().toISOString().split('T')[0]
+      return `{"key":"${card}","duration":${duration},"used":false,"usedTime":null,"usedBy":null,"createTime":"${today}"}`
+    }
+
+    function generateCards() {
+      const count = parseInt(document.getElementById('count').value) || 10
+      const duration = document.getElementById('duration').value
+      const length = parseInt(document.getElementById('length').value) || 10
+
+      if (count < 1 || count > 100) {
+        alert('请输入1-100之间的数量')
+        return
+      }
+
+      currentCards = []
+      const usedKeys = new Set()
+
+      while (currentCards.length < count) {
+        const key = generateCardKey(length)
+        if (!usedKeys.has(key)) {
+          usedKeys.add(key)
+          currentCards.push(key)
+        }
+      }
+
+      currentIndex = 0
+      renderResult(duration)
+    }
+
+    function renderResult(duration) {
+      const count = currentCards.length
+      let html = `<div class="stats"><strong>✅ 成功生成 ${count} 张卡密 | ${duration}天有效期</strong></div>`
+
+      // 当前卡密大展示
+      html += `
+        <div class="current-card">
+          <div style="font-size:14px;color:#666;margin-bottom:10px;">📌 当前卡密 (${currentIndex + 1}/${count})</div>
+          <div class="current-card-value">${currentCards[currentIndex]}</div>
+          <button class="copy-btn quick-copy-btn" onclick="copyCurrentCard()">📋 复制这个卡密</button>
+          <br>
+          <button class="export-btn quick-copy-btn" onclick="copyCurrentJSON()">📋 复制这条完整JSON</button>
+          <div style="margin-top:15px;">
+            ${currentIndex > 0 ? '<button class="copy-all-btn quick-copy-btn" onclick="prevCard()" style="margin-right:10px;">⬅️ 上一个</button>' : ''}
+            ${currentIndex < count - 1 ? '<button class="copy-all-btn quick-copy-btn" onclick="nextCard()">下一个 ➡️</button>' : ''}
+          </div>
+        </div>
+      `
+
+      // 单条完整JSON（可直接粘贴到数据库）
+      html += `
+        <div class="section-title">📥 单条完整JSON（点击复制，去数据库粘贴）</div>
+        <div class="form-group">
+          <textarea readonly class="single-json" id="singleJsonArea" onclick="this.select()">${generateSingleJSON(currentCards[currentIndex], duration)}</textarea>
+          <div style="text-align:center;margin-top:10px;">
+            <button class="export-btn" onclick="copySingleJSON()">✅ 复制这条JSON（去数据库添加记录→JSON模式→粘贴）</button>
+          </div>
+        </div>
+      `
+
+      // 所有卡密列表
+      html += '<div class="section-title">� 所有卡密列表</div>'
+      html += '<div class="form-group"><label>点击右侧按钮复制单个卡密</label>'
+      currentCards.forEach((card, index) => {
+        const isActive = index === currentIndex
+        html += `
+          <div class="card-item" style="${isActive ? 'background:#fef3c7;border-left-color:#f59e0b' : ''}">
+            <span><strong>${index + 1}.</strong> ${card} ${isActive ? ' ◀ 当前' : ''}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${card}')">复制</button>
+          </div>`
+      })
+      html += '</div>'
+
+      // 提示说明
+      html += `
+        <div class="tip">
+          <strong>💡 使用方法：</strong><br><br>
+          <strong>方法1（推荐）：</strong><br>
+          1️⃣ 点击上方的「✅ 复制这条JSON」按钮<br>
+          2️⃣ 打开云开发控制台 → 数据库 → cardKeys → 「+ 添加记录」<br>
+          3️⃣ 选择「● JSON 模式」<br>
+          4️⃣ 按 Ctrl+V 粘贴 → 点击「确定」<br><br>
+          
+          <strong>方法2：</strong><br>
+          1️⃣ 复制上面的卡密文字（如 X2RXPBTHKS）<br>
+          2️⃣ 在数据库「+ 添加记录」→ 选择「○ 默认模式」<br>
+          3️⃣ 填写：key=卡密, duration=天数, createTime=日期<br>
+          4️⃣ 其他字段留空 → 确定<br><br>
+
+          ⚠️ <strong>重要：</strong>每张卡密需要单独添加一次！
+        </div>
+      `
+
+      document.getElementById('result').innerHTML = html
+    }
+
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--
+        const duration = document.getElementById('duration').value
+        renderResult(duration)
+      }
+    }
+
+    function nextCard() {
+      if (currentIndex < currentCards.length - 1) {
+        currentIndex++
+        const duration = document.getElementById('duration').value
+        renderResult(duration)
+      }
+    }
+
+    function copyCurrentCard() {
+      copyToClipboard(currentCards[currentIndex])
+    }
+
+    function copyCurrentJSON() {
+      const duration = document.getElementById('duration').value
+      copyToClipboard(generateSingleJSON(currentCards[currentIndex], duration))
+    }
+
+    function copySingleJSON() {
+      const textarea = document.getElementById('singleJsonArea')
+      textarea.select()
+      copyToClipboard(textarea.value)
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('✅ 已复制:\n' + text.substring(0, 50) + (text.length > 50 ? '...' : ''))
+        }).catch(() => {
+          fallbackCopy(text)
+        })
+      } else {
+        fallbackCopy(text)
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea")
+      textArea.value = text
+      textArea.style.position = "fixed"
+      textArea.style.left = "-999999px"
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+        alert('✅ 已复制:\n' + text.substring(0, 50) + (text.length > 50 ? '...' : ''))
+      } catch (err) {
+        alert('复制失败，请手动选择文本复制')
+      }
+      document.body.removeChild(textArea)
+    }
+
+    window.onload = () => generateCards()
+  </script>
+</body>
+</html>

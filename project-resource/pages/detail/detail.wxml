@@ -1,0 +1,128 @@
+<view class="detail-page">
+  <!-- 导航栏 -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-back" bindtap="onBack">
+      <text>←</text>
+    </view>
+    <text class="nav-title">详情</text>
+    <view class="nav-right"></view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="detail-content">
+    <!-- 标题 -->
+    <view class="detail-header">
+      <text class="detail-title">📂 {{resource.title}}</text>
+    </view>
+
+    <!-- 信息栏 -->
+    <view class="detail-info">
+      <text class="info-item">{{resource.date}}</text>
+      <text class="info-item info-vip" wx:if="{{resource.isVip}}">会员免费</text>
+      <text class="info-item">👁 {{resource.views}}人浏览</text>
+    </view>
+
+    <!-- 项目介绍 -->
+    <view class="detail-section">
+      <view class="section-title">📋 项目介绍</view>
+      <view class="section-text detail-text-rich">{{resource.detail}}</view>
+    </view>
+
+    <!-- 项目特点 -->
+    <view class="detail-section" wx:if="{{resource.features}}">
+      <view class="section-title">✨ 项目特点</view>
+      <view class="feature-list">
+        <view class="feature-item" wx:for="{{resource.features}}" wx:key="*this">
+          <text class="feature-icon">✔️</text>
+          <text class="feature-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 适合人群 -->
+    <view class="detail-section" wx:if="{{resource.audience}}">
+      <view class="section-title">👥 适合人群</view>
+      <view class="audience-list">
+        <view class="audience-tag" wx:for="{{resource.audience}}" wx:key="*this">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 学习收获 -->
+    <view class="detail-section" wx:if="{{resource.benefits}}">
+      <view class="section-title">🎯 学习收获</view>
+      <view class="benefit-list">
+        <view class="benefit-item" wx:for="{{resource.benefits}}" wx:key="*this">
+          <text class="benefit-num">{{index + 1}}</text>
+          <text class="benefit-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 版权信息 -->
+    <view class="copyright">
+      <text>本站资源均源自网络和用户投稿，如有问题请联系客服，我们将在24小时内删除</text>
+    </view>
+
+    <!-- 底部占位 -->
+    <view class="bottom-placeholder"></view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view class="bar-left">
+      <view class="bar-btn" bindtap="onShare">
+        <text class="bar-icon">↗️</text>
+        <text class="bar-text">分享</text>
+      </view>
+      <view class="bar-btn" bindtap="onService">
+        <text class="bar-icon">💬</text>
+        <text class="bar-text">客服</text>
+      </view>
+    </view>
+    <view class="bar-right">
+      <view class="download-btn" bindtap="onDownload">
+        <text class="download-text">开通会员免费下载</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图片弹窗 -->
+  <view class="image-modal-mask" wx:if="{{showImageModal}}">
+    <view class="image-modal-content" catchtap="">
+      <view class="image-modal-header">
+        <text class="image-modal-title">{{imageModalTitle}}</text>
+        <text class="image-modal-close" bindtap="closeImageModal">✕</text>
+      </view>
+      <view class="image-modal-body">
+        <image
+          class="qr-image"
+          src="/images/0a6ef95226cee2a81e5e333d6f78ca89.png"
+          mode="widthFix"
+          show-menu-by-longpress
+        ></image>
+        <text class="image-modal-tip">{{imageModalTip}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 链接弹窗 -->
+  <view class="link-modal-mask" wx:if="{{showLinkModal}}" catchtap="closeLinkModal">
+    <view class="link-modal-content" catchtap="">
+      <view class="link-modal-header">
+        <text class="link-modal-title">下载地址</text>
+        <text class="link-modal-close" bindtap="closeLinkModal">✕</text>
+      </view>
+      <view class="link-modal-body">
+        <text class="link-label">复制以下链接到浏览器下载：</text>
+        <view class="link-box">
+          <text class="link-text">{{currentLink}}</text>
+        </view>
+        <view class="copy-btn" bindtap="onCopyLink">
+          <text class="copy-btn-text">复制链接</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

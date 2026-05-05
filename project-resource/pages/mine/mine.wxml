@@ -1,0 +1,304 @@
+<view class="mine-page">
+  <!-- 导航栏 -->
+  <view class="custom-nav">
+    <view class="nav-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-bar">
+      <text class="nav-title">我的</text>
+    </view>
+  </view>
+
+  <view class="page-content">
+    <!-- 管理后台入口（测试用） -->
+    <view class="admin-entry" bindtap="goToAdmin">
+      <text class="admin-entry-text">👑 管理者后台</text>
+    </view>
+
+    <!-- User Card -->
+  <view class="user-card">
+    <view class="user-card-top">
+      <view class="avatar-wrap flex-center">
+        <text class="avatar-placeholder">👤</text>
+      </view>
+      <view class="user-detail">
+        <view class="flex-row">
+          <text class="user-name">{{nickname}}</text>
+          <text class="tag tag-vip" wx:if="{{isVip}}">VIP</text>
+        </view>
+        <text class="text-muted text-sm">ID: {{userId}}</text>
+      </view>
+    </view>
+    <view class="user-card-stats flex-between">
+      <view class="user-stat text-center">
+        <text class="user-stat-val text-primary">{{points}}</text>
+        <text class="user-stat-label">积分</text>
+      </view>
+      <text class="stat-sep">|</text>
+      <view class="user-stat text-center">
+        <text class="user-stat-val text-primary">{{friends}}</text>
+        <text class="user-stat-label">好友数</text>
+      </view>
+      <text class="stat-sep">|</text>
+      <view class="user-stat text-center">
+        <text class="user-stat-val text-primary">{{isVip ? '是' : '否'}}</text>
+        <text class="user-stat-label">VIP</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Points Tasks -->
+  <view class="section-card">
+    <text class="section-title">积分任务</text>
+    <view class="task-list">
+      <block wx:for="{{taskList}}" wx:key="id">
+        <view
+          wx:if="{{!item.isShareButton}}"
+          class="task-item flex-between"
+        >
+          <view class="flex-row">
+            <text class="task-icon">{{item.icon}}</text>
+            <text class="task-name">{{item.name}}</text>
+          </view>
+          <view class="flex-row">
+            <text class="task-points">+{{item.points}}积分</text>
+            <button wx:if="{{item.done}}" class="task-btn task-btn-done" disabled>已签到</button>
+            <button wx:else class="task-btn" bindtap="onSign">签到</button>
+          </view>
+        </view>
+
+        <view
+          wx:else
+          class="task-item flex-between"
+        >
+          <view class="flex-row">
+            <text class="task-icon">{{item.icon}}</text>
+            <text class="task-name">{{item.name}}</text>
+          </view>
+          <view class="flex-row">
+            <text class="task-points">+{{item.points}}积分</text>
+            <button wx:if="{{item.done}}" class="task-btn task-btn-done" disabled>已邀请</button>
+            <button wx:else class="task-btn" open-type="share">邀请</button>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- Menu Groups -->
+  <view class="menu-groups">
+    <view class="menu-group" wx:for="{{menuList}}" wx:key="group" wx:for-item="group">
+      <view class="menu-group-header" wx:if="{{group.group}}">
+        <text class="menu-group-title">{{group.group}}</text>
+      </view>
+      <view class="menu-group-body card">
+        <view
+          class="menu-item flex-between"
+          wx:for="{{group.items}}"
+          wx:key="id"
+          wx:for-item="menu"
+          bindtap="onMenuTap"
+          data-id="{{menu.id}}"
+        >
+          <view class="flex-row">
+            <view class="menu-icon-wrap" style="background-color: {{menu.color}}20;">
+              <text class="menu-icon">{{menu.icon}}</text>
+            </view>
+            <text class="menu-name">{{menu.name}}</text>
+          </view>
+          <text class="text-muted" wx:if="{{menu.arrow}}">></text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Footer -->
+  <view class="mine-footer text-center">
+    <text class="text-muted text-sm">项目资源站 v1.0.0</text>
+  </view>
+  </view>
+
+  <!-- 图片弹窗 -->
+  <view class="image-modal-mask" wx:if="{{showImageModal}}">
+    <view class="image-modal-content" catchtap="">
+      <view class="image-modal-header">
+        <text class="image-modal-title">{{imageModalTitle}}</text>
+        <text class="image-modal-close" bindtap="closeImageModal">✕</text>
+      </view>
+      <view class="image-modal-body">
+        <image
+          class="qr-image"
+          src="/images/0a6ef95226cee2a81e5e333d6f78ca89.png"
+          mode="widthFix"
+          show-menu-by-longpress
+        ></image>
+        <text class="image-modal-tip">{{imageModalTip}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关于我们弹窗 -->
+  <view class="rich-modal-mask" wx:if="{{showAboutModal}}">
+    <view class="rich-modal-content about-modal-content" catchtap="">
+      <view class="rich-modal-header">
+        <text class="rich-modal-title">关于我们</text>
+        <text class="rich-modal-close" bindtap="closeAboutModal">✕</text>
+      </view>
+      <view class="rich-modal-body">
+        <view class="about-hero">
+          <view class="about-logo">📚</view>
+          <text class="about-name">项目资源站</text>
+          <text class="about-slogan">全网最热门的网创资源平台</text>
+          <text class="about-version">v1.0.0 正式版</text>
+        </view>
+
+        <view class="about-section-block">
+          <text class="section-block-title">💡 平台简介</text>
+          <text class="about-text">项目资源站是一个专注于互联网创业资源的平台，致力于为创业者提供高质量、低成本的起步资源。我们汇集了全网最热门的网创项目、引流秘籍、变现玩法，让每一位用户都能快速开启创业之路。</text>
+        </view>
+
+        <view class="about-section-block">
+          <text class="section-block-title">🎯 我们的使命</text>
+          <view class="mission-item">
+            <text class="mission-icon">🚀</text>
+            <text class="mission-text">让创业更简单 - 整合优质资源，降低创业门槛</text>
+          </view>
+          <view class="mission-item">
+            <text class="mission-icon">💎</text>
+            <text class="mission-text">品质保证 - 每一个资源都经过严格筛选</text>
+          </view>
+          <view class="mission-item">
+            <text class="mission-icon">⚡</text>
+            <text class="mission-text">效率提升 - 节省您80%的找资源时间</text>
+          </view>
+        </view>
+
+        <view class="about-section-block">
+          <text class="section-block-title">📂 资源分类</text>
+          <view class="category-grid">
+            <view class="category-item">
+              <text class="category-icon">🤖</text>
+              <text class="category-name">AI风口</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">💰</text>
+              <text class="category-name">实战项目</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">🔧</text>
+              <text class="category-name">免费工具</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">👥</text>
+              <text class="category-name">引流推广</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">🛒</text>
+              <text class="category-name">电商运营</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">✍️</text>
+              <text class="category-name">文案写作</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">📱</text>
+              <text class="category-name">自媒体</text>
+            </view>
+            <view class="category-item">
+              <text class="category-icon">🎬</text>
+              <text class="category-name">短视频</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="about-section-block">
+          <text class="section-block-title">🏆 平台优势</text>
+          <view class="advantage-item">
+            <text class="advantage-icon">📦</text>
+            <view class="advantage-content">
+              <text class="advantage-title">40000+ 精选资源</text>
+              <text class="advantage-desc">涵盖各行各业的实战项目与教程</text>
+            </view>
+          </view>
+          <view class="advantage-item">
+            <text class="advantage-icon">👥</text>
+            <view class="advantage-content">
+              <text class="advantage-title">10000+ 用户信赖</text>
+              <text class="advantage-desc">来自各行业的创业者认可与支持</text>
+            </view>
+          </view>
+          <view class="advantage-item">
+            <text class="advantage-icon">🔄</text>
+            <view class="advantage-content">
+              <text class="advantage-title">每日持续更新</text>
+              <text class="advantage-desc">第一时间获取最新最热的创业项目</text>
+            </view>
+          </view>
+          <view class="advantage-item">
+            <text class="advantage-icon">💬</text>
+            <view class="advantage-content">
+              <text class="advantage-title">7×24 小时服务</text>
+              <text class="advantage-desc">专业客服团队随时解答您的疑问</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="about-section-block">
+          <text class="section-block-title">📞 联系我们</text>
+          <view class="contact-item">
+            <text class="contact-icon">💬</text>
+            <text class="contact-text">微信：扫码联系客服</text>
+          </view>
+          <view class="contact-item">
+            <text class="contact-icon">⏰</text>
+            <text class="contact-text">时间：周一至周日 9:00-22:00</text>
+          </view>
+        </view>
+
+        <view class="about-footer">
+          <text class="about-thanks">感谢您选择项目资源站</text>
+          <text class="about-copyright">© 2024 项目资源站 版权所有</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 开通分站弹窗 -->
+  <view class="rich-modal-mask" wx:if="{{showSubstationModal}}">
+    <view class="rich-modal-content" catchtap="">
+      <view class="rich-modal-header">
+        <text class="rich-modal-title">开通分站</text>
+        <text class="rich-modal-close" bindtap="closeSubstationModal">✕</text>
+      </view>
+      <view class="rich-modal-body">
+        <view class="substation-hero">
+          <text class="substation-emoji">🏪</text>
+          <text class="substation-slogan">开启你的创业之旅</text>
+        </view>
+        <view class="substation-benefits">
+          <text class="substation-benefits-title">开通分站权益</text>
+          <view class="benefit-item">
+            <text class="benefit-icon">✅</text>
+            <text class="benefit-text">拥有独立分站，彰显身份</text>
+          </view>
+          <view class="benefit-item">
+            <text class="benefit-icon">✅</text>
+            <text class="benefit-text">享受专属折扣，最高5折</text>
+          </view>
+          <view class="benefit-item">
+            <text class="benefit-icon">✅</text>
+            <text class="benefit-text">推广佣金高达80%</text>
+          </view>
+          <view class="benefit-item">
+            <text class="benefit-icon">✅</text>
+            <text class="benefit-text">永久享受平台资源更新</text>
+          </view>
+          <view class="benefit-item">
+            <text class="benefit-icon">✅</text>
+            <text class="benefit-text">专业技术支持，售后服务</text>
+          </view>
+        </view>
+        <button class="substation-btn" bindtap="onSubstationContact">联系客服开通</button>
+        <text class="substation-tip">* 更多优惠请咨询客服</text>
+      </view>
+    </view>
+  </view>
+</view>

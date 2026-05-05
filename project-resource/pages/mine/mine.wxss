@@ -1,0 +1,835 @@
+.mine-page {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+  background-color: #f5f5f5;
+}
+
+/* 管理后台入口 */
+.admin-entry {
+  margin: 20rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 16rpx;
+  text-align: center;
+}
+.admin-entry-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+/* 导航栏 */
+.custom-nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #fff;
+}
+
+.nav-bar {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.page-content {
+  padding-top: 20rpx;
+}
+
+/* ========== User Card ========== */
+.user-card {
+  margin: 0 20rpx 24rpx;
+  background: linear-gradient(135deg, #ffffff 0%, #fffaf5 50%, #ffffff 100%);
+  border-radius: 20rpx;
+  padding: 32rpx 28rpx;
+  border: 1rpx solid rgba(245, 158, 11, 0.15);
+}
+
+.avatar-btn {
+  background: none;
+  padding: 0;
+  border: none;
+  line-height: 1;
+}
+
+.avatar-wrap {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  border: 2rpx solid #f59e0b;
+}
+
+.avatar-placeholder {
+  font-size: 56rpx;
+}
+
+.avatar-img {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  border: 2rpx solid #f59e0b;
+  margin-right: 20rpx;
+}
+
+.user-detail {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 12rpx;
+}
+
+.text-muted {
+  color: #999;
+}
+
+.text-sm {
+  font-size: 24rpx;
+}
+
+.user-card-stats {
+  margin-top: 28rpx;
+}
+
+.user-stat {
+  flex: 1;
+}
+
+.user-stat-val {
+  font-size: 36rpx;
+  display: block;
+  font-weight: bold;
+}
+
+.text-primary {
+  color: #f59e0b;
+}
+
+.user-stat-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.stat-sep {
+  color: #e8e8e8;
+  font-weight: bold;
+}
+
+/* ========== Section Card ========== */
+.section-card {
+  margin: 0 20rpx 20rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx 28rpx;
+  border: 1rpx solid #e8e8e8;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.task-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-btn {
+  padding: 10rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border: none;
+  line-height: 1.2;
+}
+
+.task-btn::after {
+  border: none;
+}
+
+.task-btn-done {
+  background: #e5e5e5;
+  color: #999;
+}
+
+.task-icon {
+  font-size: 40rpx;
+  margin-right: 12rpx;
+}
+
+.task-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.task-points {
+  font-size: 26rpx;
+  color: #f59e0b;
+  margin-right: 12rpx;
+}
+
+.task-status {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.task-status.done {
+  color: #4cd26e;
+}
+
+/* ========== Menu Groups ========== */
+.menu-groups {
+  margin: 0 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.menu-group-header {
+  margin-bottom: 12rpx;
+}
+
+.menu-group-title {
+  font-size: 24rpx;
+  color: #999;
+  padding-left: 8rpx;
+}
+
+.menu-group-body {
+  padding: 8rpx 0;
+}
+
+.menu-item {
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid #f8f8f8;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon-wrap {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+}
+
+.menu-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* ========== Footer ========== */
+.mine-footer {
+  margin-top: 40rpx;
+  padding: 20rpx;
+}
+
+/* ========== Tags ========== */
+.tag {
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+}
+
+.tag-vip {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* ========== Flex Classes ========== */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ========== 图片弹窗 ========== */
+.image-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-modal-content {
+  width: 600rpx;
+  background-color: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.image-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 32rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.image-modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.image-modal-close {
+  font-size: 36rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.image-modal-body {
+  padding: 40rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qr-image {
+  width: 480rpx;
+  border-radius: 12rpx;
+}
+
+.image-modal-tip {
+  margin-top: 24rpx;
+  font-size: 26rpx;
+  color: #666;
+  text-align: center;
+}
+
+/* ========== 丰富弹窗样式 ========== */
+.rich-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rich-modal-content {
+  width: 680rpx;
+  max-height: 85vh;
+  background-color: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rich-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 32rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.rich-modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.rich-modal-close {
+  font-size: 36rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.rich-modal-body {
+  padding: 0;
+  max-height: calc(85vh - 100rpx);
+  overflow-y: auto;
+}
+
+/* 关于我们样式 */
+.about-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 32rpx 32rpx;
+}
+
+.about-logo {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.about-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.about-version {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.about-divider {
+  height: 1rpx;
+  background-color: #f5f5f5;
+  margin: 0 32rpx;
+}
+
+.about-desc {
+  padding: 24rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.about-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.about-features {
+  padding: 24rpx 32rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.feature-icon {
+  font-size: 40rpx;
+}
+
+.feature-text {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.about-contact {
+  padding: 24rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.about-contact-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.about-contact-item {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.about-copyright {
+  padding: 24rpx 32rpx 32rpx;
+  text-align: center;
+}
+
+.about-copyright text {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 开通分站样式 */
+.substation-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 32rpx 24rpx;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff 100%);
+}
+
+.substation-emoji {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.substation-slogan {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.substation-benefits {
+  padding: 24rpx 32rpx;
+}
+
+.substation-benefits-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.benefit-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.benefit-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.benefit-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.substation-prices {
+  padding: 0 32rpx 24rpx;
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
+.price-card {
+  flex: 1;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 20rpx 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.price-card-hot {
+  background: linear-gradient(135deg, #fff5e6 0%, #fff9f0 100%);
+  border: 2rpx solid #f59e0b;
+}
+
+.price-label {
+  font-size: 22rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.price-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.price-original {
+  font-size: 22rpx;
+  color: #999;
+  text-decoration: line-through;
+  margin-right: 6rpx;
+}
+
+.price-now {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #f59e0b;
+}
+
+.price-desc {
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.price-tag {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 18rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 10rpx;
+}
+
+.substation-btn {
+  margin: 0 32rpx 16rpx;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: bold;
+  border-radius: 44rpx;
+  padding: 20rpx;
+  text-align: center;
+  border: none;
+}
+
+.substation-tip {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  color: #999;
+  padding-bottom: 24rpx;
+}
+
+/* ========== 完善的关于我们样式 ========== */
+.about-modal-content {
+  width: 720rpx;
+}
+
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 32rpx 32rpx;
+  background: linear-gradient(135deg, #fff9f0 0%, #ffffff 50%, #f8f8ff 100%);
+}
+
+.about-logo {
+  font-size: 100rpx;
+  margin-bottom: 16rpx;
+}
+
+.about-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.about-slogan {
+  font-size: 26rpx;
+  color: #f59e0b;
+  margin-top: 8rpx;
+}
+
+.about-version {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+  padding: 4rpx 16rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+}
+
+.about-section-block {
+  padding: 28rpx 32rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.section-block-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.about-section-block .about-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.8;
+}
+
+.mission-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 14rpx;
+}
+
+.mission-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.mission-text {
+  font-size: 25rpx;
+  color: #666;
+}
+
+.category-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 12rpx 20rpx;
+  border-radius: 24rpx;
+}
+
+.category-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.category-name {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.advantage-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+}
+
+.advantage-item:last-child {
+  margin-bottom: 0;
+}
+
+.advantage-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.advantage-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.advantage-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.advantage-desc {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.contact-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 14rpx;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.contact-text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.about-footer {
+  padding: 32rpx;
+  text-align: center;
+  background: #fafafa;
+}
+
+.about-thanks {
+  display: block;
+  font-size: 26rpx;
+  color: #f59e0b;
+  margin-bottom: 8rpx;
+}
+
+.about-footer .about-copyright {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+}

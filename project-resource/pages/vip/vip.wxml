@@ -1,0 +1,119 @@
+<view class="vip-page">
+  <!-- 导航栏 -->
+  <view class="custom-nav">
+    <view class="nav-placeholder" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-bar">
+      <text class="nav-title">开通VIP</text>
+    </view>
+  </view>
+  <view class="page-content">
+  <!-- Header Banner -->
+  <view class="vip-banner">
+    <view class="banner-content">
+      <text class="banner-icon">👑</text>
+      <text class="banner-title">项目资源站 · VIP</text>
+      <text class="banner-desc">开通VIP，畅享全部资源下载</text>
+    </view>
+    <view class="banner-bg"></view>
+  </view>
+
+  <!-- VIP Cards -->
+  <view class="vip-cards">
+    <view
+      class="vip-card {{item.recommend ? 'recommend' : ''}}"
+      wx:for="{{vipList}}"
+      wx:key="_id"
+      style="--card-color: {{item.color}}"
+    >
+      <view class="recommend-badge" wx:if="{{item.recommend}}">
+        <text>🔥 推荐</text>
+      </view>
+      <view class="card-header flex-between">
+        <view class="flex-row">
+          <text class="card-icon">{{item.icon}}</text>
+          <view>
+            <text class="card-name">{{item.name}}</text>
+            <text class="card-duration">{{item.duration}}</text>
+          </view>
+        </view>
+      </view>
+
+      <text class="card-desc">{{item.desc}}</text>
+      <view class="card-features">
+        <view class="feature-item" wx:for="{{item.features}}" wx:key="*this" wx:for-item="feature">
+          <text class="feature-dot">✓</text>
+          <text class="feature-text">{{feature}}</text>
+        </view>
+      </view>
+      <view class="card-btn btn btn-primary btn-block" bindtap="onBuyTap" data-item="{{item}}">
+        卡密激活
+      </view>
+    </view>
+  </view>
+
+  <!-- Rules -->
+  <view class="vip-rules card" bindtap="onRuleTap">
+    <view class="flex-between">
+      <view class="flex-row">
+        <text class="rules-icon">📜</text>
+        <text class="rules-text">VIP权益说明</text>
+      </view>
+      <text class="text-primary">查看 ></text>
+    </view>
+  </view>
+
+  <!-- Modal -->
+  <view class="modal-mask" wx:if="{{showModal}}" catchtap="closeModal">
+    <view class="modal-content" catchtap="preventBubble">
+      <view class="modal-header flex-between">
+        <text class="modal-title">卡密激活</text>
+        <text class="modal-close" bindtap="closeModal">✕</text>
+      </view>
+      <view class="modal-body">
+        <view class="card-input-area">
+          <input
+            class="big-card-input"
+            placeholder="请输入卡密"
+            placeholder-class="big-input-placeholder"
+            value="{{cardKey}}"
+            bindinput="onCardKeyInput"
+            maxlength="30"
+          />
+        </view>
+      </view>
+      <view class="modal-footer-btns">
+        <view class="contact-btn" bindtap="onContactService">
+          <text class="contact-icon">💬</text>
+          <text>联系客服</text>
+        </view>
+        <view class="sep-line"></view>
+        <view class="confirm-btn" bindtap="onActivate" wx:if="{{!activating}}">
+          <text>确定激活</text>
+        </view>
+        <view class="confirm-btn activating-btn" wx:else>
+          <text>激活中...</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图片弹窗 -->
+  <view class="image-modal-mask" wx:if="{{showImageModal}}">
+    <view class="image-modal-content" catchtap="">
+      <view class="image-modal-header">
+        <text class="image-modal-title">{{imageModalTitle}}</text>
+        <text class="image-modal-close" bindtap="closeImageModal">✕</text>
+      </view>
+      <view class="image-modal-body">
+        <image 
+          class="qr-image" 
+          src="/images/0a6ef95226cee2a81e5e333d6f78ca89.png" 
+          mode="widthFix"
+          show-menu-by-longpress
+        ></image>
+        <text class="image-modal-tip">{{imageModalTip}}</text>
+      </view>
+    </view>
+  </view>
+  </view>
+</view>
